@@ -1,0 +1,39 @@
+version: '3'
+services:
+  minio_bucket:
+    container_name: minio_bucket
+    restart: always
+    image: minio/minio:RELEASE.2022-02-16T00-35-27Z
+
+    # map data volume
+    volumes:
+       - $PWD/minio:/data
+
+    # set username and password from environment variables
+    environment:
+       MINIO_ROOT_USER: $MINIO_USER
+       MINIO_ROOT_PASSWORD: $MINIO_PASSWORD
+
+    # run minio server
+    command: server /data --console-address ":9001"
+
+    # (optional) to log console output to fluentd
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent_ip:fluent_port
+        tag: minio_bucket
+
+    # (optional) lables are for traefik reverse proxy
+    labels:
+       - "traefik.enable=true"
+       - "traefik.http.routers.s3.rule=Host(`bucket.example.com`)"
+       - "traefik.http.routers.s3.service=s3-service"
+       - "traefik.http.routers.s3.tls=true"
+       - "traefik.http.routers.s3.tls.certresolver=letsencrypt"
+       - "traefik.http.services.s3-service.loadbalancer.server.port=9000"
+       - "traefik.http.routers.s3-console-router.rule=Host(`console.example.com`)"
+       - "traefik.http.routers.s3-console-router.service=s3-console-service"
+       - "traefik.http.routers.s3-console-router.tls=true"
+       - "traefik.http.routers.s3-console-router.tls.certresolver=letsencrypt"
+       - "traefik.http.services.s3-console-service.loadbalancer.server.port=9001"
