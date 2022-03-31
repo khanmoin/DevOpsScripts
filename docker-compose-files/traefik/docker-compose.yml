@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  traefik:
+    container_name: traefik
+    restart: always
+    image: traefik:v2.2
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    # traefik.toml can be found in config/traefik.toml
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "$PWD/config/traefik.toml:/etc/traefik/traefik.toml"
+      - "$PWD/letsencrypt:/letsencrypt"
+    
+    # (optional) add logs to fluentd remove if u don't need it
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluentd_ip:fluentd_port
+        tag: traefik
