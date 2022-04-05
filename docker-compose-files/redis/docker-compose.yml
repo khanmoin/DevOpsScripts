@@ -10,7 +10,7 @@ services:
 
       # mount redis data to the host folder
       volumes:
-        - $PWD/redis-data-dev:/data
+        - $PWD/redis-data:/data
 
       # get redis password from environment variable REDIS_PASSWORD
       # appendonly flag is used to persist redis data over restarts and container stops and starts

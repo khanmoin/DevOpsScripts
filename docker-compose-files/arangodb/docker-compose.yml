@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: arangodb:3.9.0
+    restart: always
+
+    # expose port
+    ports:
+      - 8529:8529
+
+    # set root user password from environment variable ROOT_PASSWORD
+    environment:
+      ARANGO_ROOT_PASSWORD: $ROOT_PASSWORD
+
+    # map volumes
+    volumes:
+      - $PWD/arangodb_data:/var/lib/arangodb3
